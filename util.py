@@ -9,18 +9,24 @@ import numpy as np
 import cv2 
 import matplotlib.pyplot as plt
 from bbox import bbox_iou
+import pafy
+import random
+
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters())
 
+
 def count_learnable_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 
 def convert2cpu(matrix):
     if matrix.is_cuda:
         return torch.FloatTensor(matrix.size()).copy_(matrix)
     else:
         return matrix
+
 
 def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
     batch_size = prediction.size(0)
@@ -31,20 +37,17 @@ def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
     
     anchors = [(a[0]/stride, a[1]/stride) for a in anchors]
 
-
-
     prediction = prediction.view(batch_size, bbox_attrs*num_anchors, grid_size*grid_size)
     prediction = prediction.transpose(1,2).contiguous()
     prediction = prediction.view(batch_size, grid_size*grid_size*num_anchors, bbox_attrs)
 
-
+    
     #Sigmoid the  centre_X, centre_Y. and object confidencce
     prediction[:,:,0] = torch.sigmoid(prediction[:,:,0])
     prediction[:,:,1] = torch.sigmoid(prediction[:,:,1])
     prediction[:,:,4] = torch.sigmoid(prediction[:,:,4])
     
 
-    
     #Add the center offsets
     grid_len = np.arange(grid_size)
     a,b = np.meshgrid(grid_len, grid_len)
@@ -77,15 +80,18 @@ def predict_transform(prediction, inp_dim, anchors, num_classes, CUDA = True):
     
     return prediction
 
+
 def load_classes(namesfile):
     fp = open(namesfile, "r")
     names = fp.read().split("\n")[:-1]
     return names
 
+
 def get_im_dim(im):
     im = cv2.imread(im)
     w,h = im.shape[1], im.shape[0]
     return w,h
+
 
 def unique(tensor):
     tensor_np = tensor.cpu().numpy()
@@ -95,6 +101,24 @@ def unique(tensor):
     tensor_res = tensor.new(unique_tensor.shape)
     tensor_res.copy_(unique_tensor)
     return tensor_res
+
+
+def youtube_dl(youtube_link):
+    '''
+    Function to download a video from youtube
+    Arg
+    --------
+        youtube_link: a avaiable youtube link
+    Return
+    --------
+        The video path in the local machine
+    '''
+    new_temp_filename = '/tmp/ ' + str(random.randint(1, 1000000))
+    play = pafy.new(youtube_link).getbest(preftype='mp4')
+    play.download(filepath=new_temp_filename)
+
+    return new_temp_filename
+
 
 def write_results(prediction, confidence, num_classes, nms = True, nms_conf = 0.4):
     conf_mask = (prediction[:,:,4] > confidence).float().unsqueeze(2)

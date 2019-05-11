@@ -13,10 +13,11 @@ import random
 import argparse
 import pickle as pkl
 
+
 def get_test_input(input_dim, CUDA):
     img = cv2.imread("imgs/messi.jpg")
     img = cv2.resize(img, (input_dim, input_dim)) 
-    img_ =  img[:,:,::-1].transpose((2,0,1))
+    img_ = img[:,:,::-1].transpose((2,0,1))
     img_ = img_[np.newaxis,:,:,:]/255.0
     img_ = torch.from_numpy(img_).float()
     img_ = Variable(img_)
@@ -61,11 +62,13 @@ def arg_parse():
     
     
     parser = argparse.ArgumentParser(description='YOLO v3 Cam Demo')
-    parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.25)
-    parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
+    parser.add_argument("--confidence", dest="confidence", help = "Object Confidence to filter predictions", default = 0.25)
+    parser.add_argument("--nms_thresh", dest="nms_thresh", help = "NMS Threshhold", default = 0.4)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
                         default = "160", type = str)
+    parser.add_argument("--youtube_link", dest="youtube_link", 
+                        help="Link do download a video from youtube")
     return parser.parse_args()
 
 
@@ -103,8 +106,12 @@ if __name__ == '__main__':
     
     videofile = 'video.avi'
     
-    cap = cv2.VideoCapture(0)
-    
+    if(args.youtube_link):
+        youtube_video = youtube_dl(args.youtube_link)
+        cap = cv2.VideoCapture(youtube_video)
+    else:
+        cap = cv2.VideoCapture(0)  
+
     assert cap.isOpened(), 'Cannot capture source'
     
     frames = 0
