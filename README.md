@@ -50,10 +50,11 @@ to save images to. Other setting such as batch size (using `--bs` flag) , object
 python detect.py -h
 ```
 ### On youtube Video
-You can pass as an arg to cam_demo.py a youtube link video. To do this, follow the following example, just changing the link:
-    ``` 
-    python cam_demo.py --youtube_link https://www.youtube.com/watch?v=J4qqnWscqeQ   
-    ```
+You can pass as an arg to cam_demo.py a youtube link video. To do this, follow the following example, just changing the link:   
+
+``` 
+python cam_demo.py --youtube_link https://www.youtube.com/watch?v=J4qqnWscqeQ   
+```
 
 ### Speed Accuracy Tradeoff
 You can change the resolutions of the input image by the `--reso` flag. The default value is 416. Whatever value you chose, rememeber **it should be a multiple of 32 and greater than 32**. Weird things will happen if you don't. You've been warned. 
