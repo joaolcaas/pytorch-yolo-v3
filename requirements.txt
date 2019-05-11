@@ -1,0 +1,14 @@
+torch==0.4.1
+torchvision==0.2.1
+Pillow==5.0.0
+jupyter==1.0.0
+numpy==1.14.3
+opencv-python==3.4.1.15
+matplotlib==2.2.2
+pandas==0.23.1
+pafy==0.5.4
+youtube_dl
+psutil==5.4.7
+s-tui==0.8.2
+pylint==2.1.1
+flake8==3.6.0
